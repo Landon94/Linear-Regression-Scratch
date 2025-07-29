@@ -1,22 +1,7 @@
 import pandas as pd
-pd.set_option('future.no_silent_downcasting', True)
 import matplotlib.pyplot as plt
-
-from linear_regression import *
 from sklearn.model_selection import train_test_split
-
-# filepath = "../data/Student_Performance.csv"
-filepath = "data/Student_Performance.csv"
-
-df = pd.read_csv(filepath)
-df["Extracurricular Activities"] = df["Extracurricular Activities"].replace({"No": 0, "Yes": 1}).astype(int)
-
-# y_train = df["Performance Index"]
-
-# print(df)
-
-# # print(df["Hours Studied"])
-subset_df = df.iloc[:1000]
+pd.set_option('future.no_silent_downcasting', True)
 
 
 def load_data(filepath="data/Student_Performance.csv", split = True, t_size = 0.3):
@@ -54,24 +39,5 @@ def plot_features_vs_performance(X, y, n=1000, norm=False):
     plt.show()
 
 
-
-# for val in subset_df["Hours Studied"]:
-#     print(val)
-
-# y_train = subset_df["Performance Index"]
-# plt.figure(figsize=(15, 9))
-# for i, feature in enumerate(features, 1):
-    # plt.subplot(2, 3, i)
-    # plt.scatter(z_score_normalization(subset_df[feature]), y_train, alpha=0.4)
-    # plt.ylabel("Performance Index")
-    # plt.xlabel(feature)
-    # plt.title(f"{feature} vs Performance")
-
-
-
-
-X_train, X_test, y_train, y_test = load_data()
-
-# print(X_train.columns)
-
-plot_features_vs_performance(X_train, y_train, norm=True)
+# X_train, X_test, y_train, y_test = load_data()
+# plot_features_vs_performance(X_train, y_train, norm=True)
