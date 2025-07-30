@@ -39,5 +39,21 @@ def plot_features_vs_performance(X, y, n=1000, norm=False):
     plt.show()
 
 
-# X_train, X_test, y_train, y_test = load_data()
-# plot_features_vs_performance(X_train, y_train, norm=True)
+def plot_cost_vs_iteration(costs):
+    plt.plot(costs)
+    plt.ylabel("Cost")
+    plt.xlabel("Iteration")
+    plt.title("Cost vs Iteration")
+    plt.grid(True)
+    plt.show()
+
+
+def plot_predictions_vs_actual(y_test, predictions, mse, r2):
+    plt.scatter(y_test, predictions, alpha=0.5, label="Predicted vs Actual")
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linestyle='--', label="Line of Best Fit")
+    plt.xlabel("Actual Performance Index")
+    plt.ylabel("Predicted Performance Index")
+    plt.title("Actual vs. Predicted (R² Visual)")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
