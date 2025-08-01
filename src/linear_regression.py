@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from utils import *
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 
 def mean_normalization(X) -> pd.Series:
     return (X - X.mean()) / (X.max() - X.min())
@@ -12,9 +14,11 @@ def z_score_normalization(X) -> pd.Series:
 
 class LinearRegression():
 
-    def __init__(self, alpha, iterations):
+    def __init__(self, alpha, iterations, regularization=True, lambda_=0.0):
         self.alpha = alpha
         self.iterations = iterations
+        self.regularization = regularization
+        self.lambda_ = lambda_
         self.w = None
         self.b = None
 
@@ -29,6 +33,9 @@ class LinearRegression():
         cost = 0.0
         predictions = X.dot(self.w) + self.b
         cost = np.sum((predictions - y) ** 2)
+
+        if self.regularization:
+            cost += (self.lambda_ / 2) * np.sum(self.w ** 2)
         return cost / (2 * m)
     
     def _compute_gradient(self, X, y):
@@ -37,7 +44,10 @@ class LinearRegression():
         predictions = X.dot(self.w) + self.b        #shape(m,)
         error = predictions - y                     #shape(m,)
 
-        dj_dw = X.T.dot(error)                      #shape(n,m) * shape(m,)
+        if self.regularization:
+            dj_dw = X.T.dot(error) + (self.lambda_ / m) * self.w  #shape(n,m) * shape(m,)
+        else:
+            dj_dw = X.T.dot(error)
         dj_db = np.sum(error) / m
 
         return dj_dw, dj_db
@@ -69,25 +79,38 @@ class LinearRegression():
                 print(f'Iteration: {i}, Cost: {cost:.4f}')
 
     def predict(self, x):
-        return x.dot(self.W) + self.b   #shape(m,n) * shape(n,) + b
+        return x.dot(self.w) + self.b   #shape(m,n) * shape(n,) + b
 
 
 def main():
     X_train, X_test, y_train, y_test = load_data()
 
-
+    mean = X_train.mean()
+    std = X_train.std()
     X_train_normal = X_train.apply(z_score_normalization)
-    Model=LinearRegression(.00027, 10000)
+    X_test_normal = (X_test - mean) / std
+    
+    Model=LinearRegression(.00027, 25000, regularization=True, lambda_=.001)
     Model.fit(X_train_normal, y_train)
 
     # print(Model.w)
-    plot_features_vs_performance(X_train, y_train)
+    # plot_features_vs_performance(X_train, y_train)
+    # plot_features_vs_performance(X_test_normal, y_train, norm=True)
     # Model.w = np.zeros(X_train.shape[1]) 
     # Model.b = 0
     # print(Model.costs)
     plot_cost_vs_iteration(Model.costs)
     # print(Model._compute_cost(X_train, y_train))
-    pass
+
+    predictions = Model.predict(X_test_normal)
+    mse = mean_squared_error(y_test, predictions)
+    r2 = r2_score(y_test, predictions)
+
+    print(f"Test MSE: {mse:.2f}")
+    print(f"Test R²: {r2:.2f}")
+
+    plot_predictions_vs_actual(y_test, predictions)
+
 
 if __name__ == "__main__":
     main()
