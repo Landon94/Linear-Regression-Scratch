@@ -22,11 +22,11 @@ class LinearRegression():
         self.w = None
         self.b = None
 
-    def _compute_cost(self, X, y):
+    def _compute_cost(self, X, y) -> float:
         """
-        X (ndarray (m,n)): Data, m examples with n features
-        y (ndarray (m,)) : target values
-        w (ndarray (n,)) : model parameters  
+        X (DataFrame (m,n)): Data, m examples with n features
+        y (Series (m,)) : target values
+        w (Series (n,)) : model parameters  
         b (scalar)       : model parameter
         """
         m = X.shape[0]
@@ -38,7 +38,7 @@ class LinearRegression():
             cost += (self.lambda_ / 2) * np.sum(self.w ** 2)
         return cost / (2 * m)
     
-    def _compute_gradient(self, X, y):
+    def _compute_gradient(self, X, y) -> float:
         m,n = X.shape
 
         predictions = X.dot(self.w) + self.b        #shape(m,)
@@ -52,7 +52,7 @@ class LinearRegression():
 
         return dj_dw, dj_db
 
-    def _intilize_parameters(self, n_features):
+    def _intilize_parameters(self, n_features) -> None:
         self.b = 0
         self.w = np.random.randn(n_features) * 0.01
     
@@ -78,36 +78,40 @@ class LinearRegression():
             if i % 100 == 0:
                 print(f'Iteration: {i}, Cost: {cost:.4f}')
 
-    def predict(self, x):
+    def predict(self, x) -> float:
         return x.dot(self.w) + self.b   #shape(m,n) * shape(n,) + b
 
 
 def main():
+    #Load in test Data
     X_train, X_test, y_train, y_test = load_data()
 
+    #Normalize the data
     mean = X_train.mean()
     std = X_train.std()
     X_train_normal = X_train.apply(z_score_normalization)
     X_test_normal = (X_test - mean) / std
-    
-    Model=LinearRegression(.00027, 25000, regularization=True, lambda_=.001)
-    Model.fit(X_train_normal, y_train)
 
-    # print(Model.w)
+    #Optional: Visual features vs performance
     # plot_features_vs_performance(X_train, y_train)
-    # plot_features_vs_performance(X_test_normal, y_train, norm=True)
-    # Model.w = np.zeros(X_train.shape[1]) 
-    # Model.b = 0
-    # print(Model.costs)
-    plot_cost_vs_iteration(Model.costs)
-    # print(Model._compute_cost(X_train, y_train))
-
+    # plot_features_vs_performance(X_train_normal, y_train, norm=True)
+    
+    #Intialize Model and train
+    learning_rate = .00027
+    iterations = 25000
+    lambda_ = .001
+    Model=LinearRegression(learning_rate, iterations, regularization=True, lambda_=lambda_)
+    Model.fit(X_train_normal, y_train)
+    
+    #Evaluate Model
     predictions = Model.predict(X_test_normal)
     mse = mean_squared_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
     print(f"Test MSE: {mse:.2f}")
     print(f"Test R²: {r2:.2f}")
+
+    plot_cost_vs_iteration(Model.costs)
 
     plot_predictions_vs_actual(y_test, predictions)
 
