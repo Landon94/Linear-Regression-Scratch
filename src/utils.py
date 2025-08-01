@@ -48,7 +48,7 @@ def plot_cost_vs_iteration(costs):
     plt.show()
 
 
-def plot_predictions_vs_actual(y_test, predictions, mse, r2):
+def plot_predictions_vs_actual(y_test, predictions):
     plt.scatter(y_test, predictions, alpha=0.5, label="Predicted vs Actual")
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linestyle='--', label="Line of Best Fit")
     plt.xlabel("Actual Performance Index")
