@@ -29,7 +29,7 @@ The graph shows the same data after appling z-score normalization where each fea
 ## Evaluation
 
 Model trained with the following parameters:
-- Learning Rate = 0.0027
+- Learning Rate = 0.00027
 - Iterations = 25000
 - Lambda = 0.001
 
